@@ -1,0 +1,187 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import PostLayout from "@/layouts/PostLayout.astro";
+import { getPostSlug, getPostUrl } from "@/utils/getPostPaths";
+import { getSortedPosts } from "@/utils/getSortedPosts";
+import { postFilter } from "@/utils/postFilter";
+import {
+  getCategoryGroups,
+  getSeriesGroups,
+  formatPostDate,
+} from "@/utils/writing";
+import { slugifyStr } from "@/utils/slugify";
+import config from "@/config";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  // Draft and scheduled article URLs exist only in the local development server.
+  const visiblePosts = import.meta.env.DEV ? posts : getSortedPosts(posts);
+  return visiblePosts.map(post => ({
+    params: { slug: getPostSlug(post.id, post.filePath) },
+    props: { post },
+  }));
+}
+
+type Props = { post: CollectionEntry<"posts"> };
+const { post } = Astro.props;
+const {
+  title,
+  description,
+  pubDatetime,
+  modDatetime,
+  categories,
+  series,
+  timezone,
+  canonicalURL,
+} = post.data;
+const preview = !postFilter(post);
+const { Content } = await render(post);
+const allPosts = await getCollection("posts");
+const categorySlugs = new Set(
+  getCategoryGroups(allPosts).map(group => group.slug)
+);
+const seriesGroup = getSeriesGroups(allPosts).find(
+  group => group.slug === series?.slug
+);
+const seriesPosition =
+  seriesGroup?.posts.findIndex(entry => entry.id === post.id) ?? -1;
+const previous =
+  seriesPosition > 0 ? seriesGroup?.posts[seriesPosition - 1] : undefined;
+const next =
+  seriesPosition >= 0 ? seriesGroup?.posts[seriesPosition + 1] : undefined;
+const ogImage =
+  typeof post.data.ogImage === "string"
+    ? post.data.ogImage
+    : post.data.ogImage?.src;
+---
+
+<PostLayout
+  {title}
+  {description}
+  {pubDatetime}
+  {modDatetime}
+  {canonicalURL}
+  {ogImage}
+  noindex={preview}
+>
+  <a class="text-link article-back" href="/writing/">← All writing</a>
+  {
+    preview && (
+      <aside class="draft-notice">
+        <strong>Unpublished preview.</strong> This article is visible only in
+        the local development server.
+      </aside>
+    )
+  }
+  <header class="article-header">
+    {
+      categories.length > 0 && (
+        <p class="eyebrow article-categories">
+          {categories.map(category =>
+            categorySlugs.has(slugifyStr(category)) ? (
+              <a href={`/writing/category/${slugifyStr(category)}/`}>
+                {category}
+              </a>
+            ) : (
+              <span>{category}</span>
+            )
+          )}
+        </p>
+      )
+    }
+    <h1 class="page-heading">{title}</h1>
+    <p class="lede">{description}</p>
+    <div class="article-meta">
+      <time datetime={pubDatetime.toISOString()}
+        >{formatPostDate(pubDatetime, timezone ?? config.site.timezone)}</time
+      >
+      {
+        modDatetime && modDatetime > pubDatetime && (
+          <span>
+            Updated{" "}
+            <time datetime={modDatetime.toISOString()}>
+              {formatPostDate(modDatetime, timezone ?? config.site.timezone)}
+            </time>
+          </span>
+        )
+      }
+    </div>
+    {
+      series && (
+        <p class="series-note">
+          {seriesGroup ? (
+            <a class="text-link" href={`/writing/series/${series.slug}/`}>
+              {series.name}
+            </a>
+          ) : (
+            series.name
+          )}{" "}
+          · Part {series.order}
+        </p>
+      )
+    }
+  </header>
+  <article id="article" class="app-prose prose-content"><Content /></article>
+  {
+    (previous || next) && (
+      <nav class="series-navigation" aria-label="Articles in this series">
+        {previous && (
+          <a
+            class="text-link"
+            href={getPostUrl(previous.id, previous.filePath)}
+          >
+            ← Previous: {previous.data.title}
+          </a>
+        )}
+        {next && (
+          <a class="text-link" href={getPostUrl(next.id, next.filePath)}>
+            Next: {next.data.title} →
+          </a>
+        )}
+      </nav>
+    )
+  }
+</PostLayout>
+
+<style>
+  .article-back {
+    display: inline-block;
+    margin-bottom: 2.5rem;
+  }
+  .article-header {
+    margin-bottom: 3rem;
+  }
+  .article-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+  }
+  .series-note {
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+  }
+  .draft-notice {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    background: var(--muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  .series-navigation {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+  }
+</style>

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.astro/
+public/pagefind/
+pnpm-lock.yaml
+personal_website_codex_brief.md

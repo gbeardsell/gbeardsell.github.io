@@ -1,0 +1,74 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+---
+
+<PageLayout
+  title="About"
+  description="Guillaume Beardsell is a computational scientist and mechanical engineer with a Caltech PhD and a background in reacting-flow simulation and numerical methods."
+>
+  <p class="eyebrow">A little background</p>
+  <h1 class="page-heading">About me</h1>
+  <p class="lede">
+    I’m Guillaume Beardsell, a computational scientist and mechanical engineer.
+  </p>
+  <div class="about-content">
+    <div class="prose-content">
+      <p>
+        I have a PhD in mechanical engineering from Caltech. My background spans
+        reacting-flow simulation, numerical methods, and scientific computing.
+      </p>
+      <p>
+        I’m interested in how computational tools help us understand physical
+        systems: how we represent the physics, solve the equations, and assess
+        what a simulation can tell us.
+      </p>
+      <p>
+        This site brings together my projects and technical writing. One current
+        project is <a href="/projects/fogcast/">Fogcast</a>, an exploration of
+        local clear-sky forecasting for the Bay Area.
+      </p>
+      <p>
+        You can find my public work on <a href="https://github.com/gbeardsell"
+          >GitHub <span aria-hidden="true">↗</span></a
+        >.
+      </p>
+    </div>
+    <aside aria-label="Areas of work">
+      <p class="eyebrow">Areas of work</p>
+      <ul>
+        <li>Scientific computing</li><li>Numerical methods</li><li>
+          Reacting-flow simulation
+        </li><li>Mechanical engineering</li>
+      </ul>
+    </aside>
+  </div>
+</PageLayout>
+<style>
+  .about-content {
+    display: grid;
+    grid-template-columns: 1fr 16rem;
+    gap: 5rem;
+    margin-top: 2.5rem;
+  }
+  aside {
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--border);
+    align-self: start;
+  }
+  aside ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--muted-foreground);
+  }
+  aside li {
+    margin-block: 0.6rem;
+  }
+  @media (max-width: 800px) {
+    .about-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

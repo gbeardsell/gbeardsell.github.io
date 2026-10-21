@@ -1,0 +1,97 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "@/layouts/PageLayout.astro";
+import Card from "@/components/Card.astro";
+import { getSortedPosts } from "@/utils/getSortedPosts";
+import { getCategoryGroups, getSeriesGroups } from "@/utils/writing";
+
+const allPosts = await getCollection("posts");
+const posts = getSortedPosts(allPosts);
+const categories = getCategoryGroups(allPosts);
+const series = getSeriesGroups(allPosts);
+---
+
+<PageLayout
+  title="Writing"
+  description="Notes on scientific computing, numerical methods, and building Fogcast."
+>
+  <p class="eyebrow">Writing</p>
+  <h1 class="page-heading">Notes from the work.</h1>
+  <p class="lede">
+    Scientific computing, numerical methods, and what I learn along the way.
+  </p>
+  {
+    posts.length > 0 ? (
+      <>
+        <nav aria-label="Browse writing" class="writing-groups">
+          {categories.length > 0 && (
+            <div>
+              <h2 class="section-heading">Categories</h2>
+              <ul>
+                {categories.map(group => (
+                  <li>
+                    <a
+                      class="text-link"
+                      href={`/writing/category/${group.slug}/`}
+                    >
+                      {group.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {series.length > 0 && (
+            <div>
+              <h2 class="section-heading">Series</h2>
+              <ul>
+                {series.map(group => (
+                  <li>
+                    <a
+                      class="text-link"
+                      href={`/writing/series/${group.slug}/`}
+                    >
+                      {group.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </nav>
+        <ul class="article-list" aria-label="Published articles">
+          {posts.map(post => (
+            <Card {...post} />
+          ))}
+        </ul>
+      </>
+    ) : (
+      <div class="empty-state">
+        <h2 class="section-heading">Articles are on the way.</h2>
+        <p>
+          I’m working on Fogcast, a clear-sky forecasting project for the Bay
+          Area. I’ll share technical notes here as the work develops.
+        </p>
+        <a class="text-link" href="/projects/fogcast/">
+          Read about Fogcast <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    )
+  }
+</PageLayout>
+
+<style>
+  .writing-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem 4rem;
+    margin-block: 3rem 1rem;
+  }
+  .writing-groups ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    list-style: none;
+    padding: 0;
+  }
+</style>

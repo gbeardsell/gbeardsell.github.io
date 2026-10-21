@@ -1,0 +1,57 @@
+﻿---
+import type { CollectionEntry } from "astro:content";
+import { getPostUrl } from "@/utils/getPostPaths";
+import { formatPostDate } from "@/utils/writing";
+import config from "@/config";
+
+type Props = { variant?: "h2" | "h3" } & CollectionEntry<"posts">;
+const { variant: Heading = "h2", id, data, filePath } = Astro.props;
+---
+
+<li class="article-card">
+  <time datetime={data.pubDatetime.toISOString()}>
+    {formatPostDate(data.pubDatetime, data.timezone ?? config.site.timezone)}
+  </time>
+  <Heading><a href={getPostUrl(id, filePath)}>{data.title}</a></Heading>
+  <p>{data.description}</p>
+  {
+    data.series && (
+      <span class="series-label">
+        {data.series.name} · Part {data.series.order}
+      </span>
+    )
+  }
+</li>
+
+<style>
+  .article-card {
+    padding-block: 1.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+  time,
+  .series-label {
+    color: var(--muted-foreground);
+    font-size: 0.85rem;
+  }
+  h2,
+  h3 {
+    margin-block: 0.45rem 0.6rem;
+    font-size: 1.55rem;
+    line-height: 1.3;
+  }
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  p {
+    max-width: 65ch;
+    line-height: 1.65;
+  }
+  .series-label {
+    display: block;
+    margin-top: 0.75rem;
+  }
+</style>

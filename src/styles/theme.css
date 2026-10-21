@@ -1,0 +1,21 @@
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --font-app:
+    "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+:root {
+  color-scheme: light;
+  --background: #faf9f6;
+  --foreground: #242e33;
+  --accent: #245c74;
+  --accent-foreground: #fff;
+  --muted: #eef0ed;
+  --muted-foreground: #5b686e;
+  --border: #d9dedb;
+}

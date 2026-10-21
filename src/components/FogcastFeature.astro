@@ -1,0 +1,88 @@
+---
+import FogcastSketch from "./FogcastSketch.astro";
+---
+
+<article class="fogcast-feature">
+  <div class="feature-copy">
+    <p class="eyebrow">Weather &amp; scientific computing</p>
+    <h2><a href="/projects/fogcast/">Fogcast</a></h2>
+    <p>Where will the sky clear next?</p>
+    <p class="feature-description">
+      A project exploring local clear-sky forecasts for the San Francisco Bay
+      Area, using satellite observations and weather-model inputs.
+    </p>
+    <div class="feature-bottom">
+      <span class="status"
+        ><span aria-hidden="true"></span>Work in progress</span
+      >
+      <a class="text-link" href="/projects/fogcast/"
+        >Explore the project <span aria-hidden="true">↗</span></a
+      >
+    </div>
+  </div>
+  <FogcastSketch compact />
+</article>
+<style>
+  .fogcast-feature {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    border: 1px solid var(--border);
+  }
+  .feature-copy {
+    padding: 2rem 2.2rem;
+    align-self: center;
+  }
+  h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.5rem;
+    line-height: 1.15;
+    margin: 0 0 1rem;
+    font-weight: 400;
+    letter-spacing: -0.035em;
+  }
+  h2 a {
+    text-decoration: none;
+  }
+  .eyebrow {
+    font-size: 0.62rem;
+    margin-bottom: 1.1rem;
+  }
+  p {
+    margin-bottom: 0.6rem;
+  }
+  .feature-description {
+    font-size: 0.92rem;
+    color: var(--muted-foreground);
+    max-width: 29rem;
+    line-height: 1.75;
+  }
+  .feature-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    align-items: center;
+    margin-top: 1.7rem;
+    font-size: 0.78rem;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--muted-foreground);
+    font-size: 0.72rem;
+  }
+  .status span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  @media (max-width: 700px) {
+    .fogcast-feature {
+      grid-template-columns: 1fr;
+    }
+    .feature-copy {
+      padding: 1.6rem;
+    }
+  }
+</style>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500" fill="none">
+  <rect width="1000" height="500" rx="12" fill="#F1F4F5" />
+  <rect x="425" y="200" width="150" height="100" fill="#557B94" />
+  <path d="M125 100H875V400H125V100ZM125 200H875M125 300H875M275 100V400M425 100V400M575 100V400M725 100V400" stroke="#71818B" stroke-width="2" />
+  <circle cx="500" cy="250" r="7" fill="#FFFFFF" />
+  <circle cx="350" cy="250" r="7" fill="#334750" />
+  <circle cx="650" cy="250" r="7" fill="#334750" />
+  <path d="M365 250H480M520 250H635" stroke="#334750" stroke-width="2" stroke-dasharray="6 6" />
+</svg>

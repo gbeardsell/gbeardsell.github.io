@@ -1,0 +1,33 @@
+---
+import config from "@/config";
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/projects/", label: "Projects" },
+  { href: "/writing/", label: "Writing" },
+  { href: "/about/", label: "About" },
+];
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header" data-pagefind-ignore>
+  <a class="site-name" href="/" aria-label="Guillaume Beardsell — home">
+    <span class="site-monogram" aria-hidden="true">gb.</span>
+    <span>{config.site.title}</span>
+  </a>
+  <nav aria-label="Main navigation">
+    <ul class="site-nav">
+      {
+        links.map(({ href, label }) => (
+          <li>
+            <a {href} aria-current={isActive(href) ? "page" : undefined}>
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

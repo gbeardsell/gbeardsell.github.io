@@ -1,0 +1,92 @@
+﻿---
+import "@pagefind/default-ui/css/ui.css";
+import PageLayout from "@/layouts/PageLayout.astro";
+import { getAssetPath } from "@/utils/withBase";
+---
+
+<PageLayout
+  title="Search"
+  description="Search projects, articles, and background."
+  noindex
+>
+  <div data-pagefind-ignore>
+    <p class="eyebrow">Search</p>
+    <h1 class="page-heading">Find something.</h1>
+    <p class="lede">Search projects, articles, and background.</p>
+    {
+      import.meta.env.DEV ? (
+        <p class="empty-state">
+          Search is available in the production preview. Run{" "}
+          <code>pnpm build</code>, then <code>pnpm preview</code>.
+        </p>
+      ) : (
+        <div
+          id="pagefind-search"
+          data-bundle-path={getAssetPath("pagefind/")}
+        />
+      )
+    }
+    <noscript
+      ><p>
+        Search needs JavaScript. You can also browse <a href="/projects/"
+          >projects</a
+        > and <a href="/writing/">writing</a>.
+      </p></noscript
+    >
+  </div>
+</PageLayout>
+
+<script>
+  async function initSearch() {
+    const container = document.querySelector<HTMLElement>("#pagefind-search");
+    if (!container || container.dataset.initialized) return;
+    container.dataset.initialized = "true";
+    // @ts-expect-error The Pagefind UI package does not publish TypeScript types.
+    const { PagefindUI } = await import("@pagefind/default-ui");
+    const params = new URLSearchParams(window.location.search);
+    const search = new PagefindUI({
+      element: "#pagefind-search",
+      bundlePath: container.dataset.bundlePath,
+      showImages: false,
+      showSubResults: true,
+      processTerm(term: string) {
+        const query = new URLSearchParams(window.location.search);
+        if (term) query.set("q", term);
+        else query.delete("q");
+        const suffix = query.size ? `?${query.toString()}` : "";
+        history.replaceState(
+          history.state,
+          "",
+          `${window.location.pathname}${suffix}`
+        );
+        return term;
+      },
+    });
+    const query = params.get("q");
+    if (query) search.triggerSearch(query);
+  }
+  document.addEventListener("astro:page-load", initSearch);
+  initSearch();
+</script>
+
+<style is:global>
+  #pagefind-search {
+    margin-block: 3rem;
+    --pagefind-ui-font: var(--font-app);
+    --pagefind-ui-text: var(--foreground);
+    --pagefind-ui-background: var(--background);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-tag: var(--background);
+    --pagefind-ui-border-radius: 0.25rem;
+    --pagefind-ui-border-width: 1px;
+  }
+  #pagefind-search input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  #pagefind-search .pagefind-ui__result-title a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

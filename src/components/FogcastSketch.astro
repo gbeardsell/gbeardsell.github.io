@@ -1,0 +1,99 @@
+---
+const { compact = false } = Astro.props;
+---
+
+<div
+  class:list={["fogcast-sketch", { compact }]}
+  aria-label="Planned Fogcast workflow: satellite and weather-model inputs, a 500 metre grid, and clear-sky forecasts."
+>
+  <p class="sketch-label">A local view of the sky</p>
+  <div class="sketch-visual" aria-hidden="true">
+    <svg viewBox="0 0 340 180" fill="none">
+      <defs>
+        <pattern
+          id="forecast-grid"
+          width="22"
+          height="22"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M 22 0 L 0 0 0 22"
+            stroke="currentColor"
+            stroke-opacity=".22"
+            stroke-width="1"></path>
+        </pattern>
+      </defs>
+      <path
+        d="M58 105 170 47 282 105 170 163Z"
+        fill="currentColor"
+        fill-opacity=".04"
+        stroke="currentColor"
+        stroke-opacity=".35"></path>
+      <path
+        d="M58 83 170 25 282 83 170 141Z"
+        fill="#e8eff0"
+        stroke="currentColor"
+        stroke-opacity=".5"></path>
+      <path
+        d="M58 61 170 3 282 61 170 119Z"
+        fill="#f6f8f5"
+        stroke="currentColor"></path>
+      <path d="M58 61 170 3 282 61 170 119Z" fill="url(#forecast-grid)"></path>
+      <path
+        d="M58 61V105M170 119V163M282 61V105"
+        stroke="currentColor"
+        stroke-opacity=".45"
+        stroke-dasharray="3 4"></path>
+      <path
+        d="m143 51 27-14 27 14-27 14Z"
+        fill="currentColor"
+        fill-opacity=".17"></path>
+      <path d="M170 65v27" stroke="currentColor" stroke-dasharray="3 4"></path>
+      <circle cx="170" cy="92" r="3" fill="currentColor"></circle>
+    </svg>
+  </div>
+  <div class="sketch-meta">
+    <span>Bay Area</span><span>500 m · intended grid</span>
+  </div>
+  <p class="sketch-caption">Conceptual grid · work in progress</p>
+</div>
+<style>
+  .fogcast-sketch {
+    background: #eaf0f0;
+    color: var(--accent);
+    padding: 1.6rem 1.8rem 1.25rem;
+  }
+  .sketch-label {
+    margin: 0;
+    font-size: 0.65rem;
+    font-family: ui-monospace, Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .sketch-visual {
+    padding-block: 1.1rem 0.8rem;
+  }
+  .sketch-visual svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .sketch-meta {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    border-top: 1px solid #c8d8db;
+    padding-top: 0.8rem;
+    font-size: 0.72rem;
+  }
+  .sketch-caption {
+    margin: 0.5rem 0 0;
+    font-size: 0.7rem;
+    color: #49626a;
+  }
+  @media (max-width: 450px) {
+    .fogcast-sketch {
+      padding: 1.3rem;
+    }
+  }
+</style>

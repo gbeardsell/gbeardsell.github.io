@@ -1,0 +1,27 @@
+{
+  "Article frontmatter": {
+    "scope": "markdown",
+    "prefix": "frontmatter",
+    "body": [
+      "---",
+      "title: \"${1:Article title}\"",
+      "pubDatetime: $CURRENT_YEAR-$CURRENT_MONTH-${CURRENT_DATE}T12:00:00Z",
+      "description: \"${2:One-sentence summary.}\"",
+      "draft: true",
+      "categories:",
+      "  - ${3:Fogcast}",
+      "---",
+      "",
+      "$0",
+    ],
+    "description": "Start a draft article with validated frontmatter.",
+  },
+  "Captioned figure": {
+    "scope": "markdown",
+    "prefix": "figure",
+    "body": [
+      "![${1:Describe the figure.}](../../assets/figures/${2:figure.svg} \"${3:Visible caption.}\")",
+    ],
+    "description": "Insert a responsive image with alt text and a figure caption.",
+  },
+}
