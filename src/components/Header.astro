@@ -1,20 +1,29 @@
 ---
 import config from "@/config";
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/projects/", label: "Projects" },
-  { href: "/writing/", label: "Writing" },
-  { href: "/about/", label: "About" },
+  { href: "/", label: "Blog" },
+  { href: "https://fogcast.today", label: "fogcast.today" },
+  { href: "https://github.com/gbeardsell/fogcast", label: "Fogcast GitHub" },
+  {
+    href: "https://www.linkedin.com/in/guillaume-beardsell",
+    label: "LinkedIn",
+  },
 ];
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
-  href === "/" ? path === "/" : path.startsWith(href);
+  href === "/" && (path === "/" || path.startsWith("/writing/"));
 ---
 
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header" data-pagefind-ignore>
   <a class="site-name" href="/" aria-label="Guillaume Beardsell — home">
-    <span class="site-monogram" aria-hidden="true">gb.</span>
+    <img
+      class="site-icon"
+      src="/fogcast-icon.png"
+      alt=""
+      width="28"
+      height="28"
+    />
     <span>{config.site.title}</span>
   </a>
   <nav aria-label="Main navigation">
@@ -24,6 +33,9 @@ const isActive = (href: string) =>
           <li>
             <a {href} aria-current={isActive(href) ? "page" : undefined}>
               {label}
+              {href.startsWith("https://") && (
+                <span aria-hidden="true"> ↗</span>
+              )}
             </a>
           </li>
         ))

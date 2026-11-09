@@ -102,24 +102,23 @@
   letter-spacing: -0.02em;
   text-decoration: none;
 }
-.site-monogram {
-  color: var(--accent);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.65rem;
-  line-height: 1;
-  letter-spacing: -0.08em;
-  padding-right: 0.8rem;
-  border-right: 1px solid var(--border);
+.site-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 0.35rem;
 }
 .site-nav {
   display: flex;
+  flex-wrap: wrap;
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 1.7rem;
+  gap: 0.25rem 1.5rem;
 }
 .site-nav a {
   display: block;
+  white-space: nowrap;
   font-size: 0.86rem;
   text-decoration: none;
   padding-block: 0.5rem;
@@ -261,7 +260,7 @@
     padding-block: 1.2rem 0.7rem;
   }
   .site-nav {
-    gap: 1.8rem;
+    gap: 0.25rem 1.25rem;
   }
   .site-nav a {
     font-size: 0.85rem;

@@ -18,6 +18,14 @@ export default function rehypeFigureCaptions() {
       if (image.tagName !== "img" || typeof caption !== "string") return;
       delete image.properties!.title;
       node.tagName = "figure";
+      // Numbered captions provide stable destinations for article references.
+      const label = caption.match(/^Figure\s+([\w-]+)\./i)?.[1];
+      if (label && !node.properties?.id) {
+        node.properties = {
+          ...node.properties,
+          id: `figure-${label.toLowerCase()}`,
+        };
+      }
       node.children = [
         image,
         {

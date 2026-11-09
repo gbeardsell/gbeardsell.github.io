@@ -115,6 +115,17 @@
     max-width: 100%;
     height: auto;
   }
+  .app-prose .table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .app-prose .table-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  .app-prose .table-scroll table {
+    min-width: 44rem;
+  }
   .app-prose .katex-display {
     overflow-x: auto;
     overflow-y: hidden;
@@ -146,4 +157,43 @@
       @apply border-border rounded-sm border px-0.5 py-px;
     }
   }
+}
+
+.app-prose .figure-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1rem;
+  width: 100%;
+}
+.app-prose .figure-panels > p {
+  min-width: 0;
+  margin: 0;
+}
+.app-prose .figure-panels img {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+.app-prose .clear-reference-schematic {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+.app-prose .clear-reference-schematic-image {
+  position: relative;
+  aspect-ratio: 3937 / 924;
+  overflow: hidden;
+}
+.app-prose .clear-reference-schematic-image img {
+  /* Frame the visible diagram in the 4185 × 1387 source canvas. */
+  position: absolute;
+  width: calc(100% * 4185 / 3937);
+  max-width: none;
+  height: auto;
+  top: calc(-100% * 137 / 924);
+  left: calc(-100% * 248 / 3937);
+  margin: 0;
+  border: 0;
 }

@@ -1,6 +1,6 @@
 # Guillaume Beardsell's website
 
-A static personal website and technical writing archive, built with AstroPaper. The initial address is `https://gbeardsell.github.io`; `gbeardsell.com` is the later custom domain. Fogcast is presented as work in progress. Its code and live forecast belong in separate projects.
+A static blog, built with AstroPaper. The home page lists blog posts and links to [fogcast.today](https://fogcast.today), the [public Fogcast repository](https://github.com/gbeardsell/fogcast), and [LinkedIn](https://www.linkedin.com/in/guillaume-beardsell). The initial address is `https://gbeardsell.github.io`; `gbeardsell.com` is the later custom domain.
 
 ## Local setup
 
@@ -34,7 +34,7 @@ corepack pnpm check:publication
 corepack pnpm preview --host 127.0.0.1 --port 4321
 ```
 
-`build` checks Astro/TypeScript, generates the static site in `dist/`, and builds the Pagefind search index. `check:publication` inspects that production output for publication leaks and broken internal links. Run it after a fresh build. The preview serves the built site, so rebuild after editing. Search should be checked in this production preview.
+`build` checks Astro/TypeScript, generates the static site in `dist/`, and builds the Pagefind search index. `check:publication` inspects that production output for publication leaks and broken internal links. Run it after a fresh build. The preview serves the built site, so rebuild after editing. There is currently no public search page.
 
 Use `corepack pnpm format` to apply the project's formatting. Review the changed files afterward. Before publishing, inspect the main pages at desktop and mobile widths, keyboard navigation, and any new article's equations, figures, and code blocks.
 
@@ -42,20 +42,22 @@ The site uses local system fonts. To update the social preview image, edit `src/
 
 ## Where to edit
 
-| Location                       | Purpose                                                                     |
-| ------------------------------ | --------------------------------------------------------------------------- |
-| `astro-paper.config.ts`        | Site name, description, public URL, and recent article count.               |
-| `src/pages/`                   | Home, Projects, Fogcast, Writing, About, and generated indexes.             |
-| `src/content/posts/`           | Markdown articles.                                                          |
-| `src/content.config.ts`        | Article frontmatter schema.                                                 |
-| `src/assets/figures/`          | Article figures referenced from Markdown.                                   |
-| `src/styles/`                  | Global and article styles.                                                  |
-| `public/`                      | Assets copied directly to the public site.                                  |
-| `astro.config.ts`              | Astro integrations and Markdown processing.                                 |
-| `.github/workflows/deploy.yml` | Build, checks, and GitHub Pages deployment.                                 |
-| `TODO.md`                      | Content and publication tasks that still need decisions or source material. |
+| Location                         | Purpose                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------- |
+| `astro-paper.config.ts`          | Site name, description, and public URL.                                     |
+| `src/pages/`                     | Blog home, article routes, and generated category and series indexes.       |
+| `src/components/Header.astro`    | Blog navigation and the three external links.                               |
+| `src/components/BlogPosts.astro` | Complete post list and development-only drafts.                             |
+| `src/content/posts/`             | Markdown articles.                                                          |
+| `src/content.config.ts`          | Article frontmatter schema.                                                 |
+| `src/assets/figures/`            | Article figures referenced from Markdown.                                   |
+| `src/styles/`                    | Global and article styles.                                                  |
+| `public/`                        | Assets copied directly to the public site.                                  |
+| `astro.config.ts`                | Astro integrations and Markdown processing.                                 |
+| `.github/workflows/deploy.yml`   | Build, checks, and GitHub Pages deployment.                                 |
+| `TODO.md`                        | Content and publication tasks that still need decisions or source material. |
 
-The site uses `/`, `/projects/`, `/projects/fogcast/`, `/writing/`, and `/about/`. There is no repository-name base path because the target repository is `gbeardsell/gbeardsell.github.io`.
+The blog appears at `/` and `/writing/`; articles keep their `/writing/<slug>/` URLs. About, Projects, and Search pages are omitted from this release. There is no repository-name base path because the target repository is `gbeardsell/gbeardsell.github.io`.
 
 ## Write an article
 
@@ -78,9 +80,9 @@ series:
 
 `title`, `pubDatetime`, and `description` are required. `draft` defaults to `true`; set it explicitly. `categories` groups articles by subject. `series` is optional: omit the whole block for a standalone article, or use the same name and slug with increasing positive order numbers for a sequence. Tags and `modDatetime` are optional.
 
-Category and series pages are generated from published articles, such as `/writing/category/fogcast/` and `/writing/series/fogcast-notes/`. Initially there are no published articles, and the writing page has an empty state.
+Category and series pages are generated from published articles, such as `/writing/category/fogcast/` and `/writing/series/fogcast-notes/`. When no articles have been published, the production blog shows an empty state.
 
-The unpublished [authoring example](src/content/posts/authoring-example.md) demonstrates headings, highlighted code, equations, a captioned figure, and series metadata. With `corepack pnpm dev` running, open `/writing/authoring-example/` to inspect it. Keep this instructional example as a draft.
+The unpublished [authoring example](src/content/posts/_authoring-example.md) demonstrates headings, highlighted code, equations, a captioned figure, and series metadata. Its leading underscore excludes it from the content collection, including the local preview. To inspect it locally, temporarily rename it to `authoring-example.md` and run `corepack pnpm dev`. Keep this instructional example as a draft.
 
 ### Equations, code, and figures
 
@@ -102,15 +104,17 @@ Use fenced code blocks with a language, such as `python`, for syntax highlightin
 
 The image title becomes a visible figure caption. Write useful alt text independently of the caption. Images scale to the article width; long equations and code can scroll horizontally. Adjust relative image paths when nesting article files.
 
+Numbered captions such as `Figure 1.` also create an anchor, so use `[Figure 1](#figure-1)` for a clickable reference. For a multi-image HTML figure, add the matching `id` to its `<figure>` element. Link table references to the table caption's `id`, for example `[Table 1](#table-1)`.
+
 ### Publish deliberately
 
 1. Write and inspect the article with `draft: true` using the development server.
 2. Confirm its facts, links, figure labels, alt text, and metadata.
 3. Set `draft: false` and choose a publication timestamp at or before the intended build time.
-4. Run the checks and production preview above. Verify the article, category/series links, RSS, and search.
+4. Run the checks and production preview above. Verify the article, category/series links, and RSS.
 5. Commit and push the reviewed source when ready to publish.
 
-Production excludes drafts and future-dated articles from article routes, listings, RSS, sitemap, social-image routes, and search. They remain directly viewable in development. This is a static site: a future-dated article requires another build once its publication time arrives; the workflow does not schedule that build automatically.
+Production excludes drafts and future-dated articles from article routes, listings, RSS, sitemap, social-image routes, and search. In development, drafts appear in a separate Drafts section on `/` and `/writing/`, and drafts and future-dated articles remain directly viewable at their article URLs. The two current Fogcast posts are still drafts and must be explicitly marked `draft: false` before they appear in production. This is a static site: a future-dated article requires another build once its publication time arrives; the workflow does not schedule that build automatically.
 
 Draft status controls the generated site, not access to source files in a public repository. Assets under `public/` are copied to every production build, regardless of article draft status.
 

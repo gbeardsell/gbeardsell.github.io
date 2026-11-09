@@ -1,0 +1,64 @@
+---
+import { getCollection } from "astro:content";
+import Card from "@/components/Card.astro";
+import { getSortedPosts } from "@/utils/getSortedPosts";
+
+const allPosts = await getCollection("posts");
+const posts = getSortedPosts(allPosts);
+const drafts = import.meta.env.DEV
+  ? allPosts
+      .filter(post => post.data.draft)
+      .sort(
+        (a, b) =>
+          (a.data.series?.slug ?? "").localeCompare(
+            b.data.series?.slug ?? ""
+          ) ||
+          (a.data.series?.order ?? 0) - (b.data.series?.order ?? 0) ||
+          (b.data.modDatetime ?? b.data.pubDatetime).getTime() -
+            (a.data.modDatetime ?? a.data.pubDatetime).getTime()
+      )
+  : [];
+---
+
+<div class="blog">
+  <h1 class="page-heading">Blog</h1>
+  {
+    posts.length > 0 ? (
+      <ul class="article-list" aria-label="Published posts">
+        {posts.map(post => (
+          <Card {...post} />
+        ))}
+      </ul>
+    ) : drafts.length === 0 ? (
+      <div class="empty-state">
+        <p>No posts published yet.</p>
+      </div>
+    ) : null
+  }
+  {
+    drafts.length > 0 && (
+      <section class="drafts-section" aria-labelledby="drafts-heading">
+        <h2 id="drafts-heading" class="section-heading">
+          Drafts
+        </h2>
+        <p>
+          These posts are unpublished and visible only in the local preview.
+        </p>
+        <ul class="article-list" aria-label="Draft posts">
+          {drafts.map(post => (
+            <Card {...post} variant="h3" />
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</div>
+
+<style>
+  .blog {
+    max-width: 46rem;
+  }
+  .drafts-section {
+    margin-top: 3rem;
+  }
+</style>
