@@ -2,7 +2,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 
 export default defineAstroPaperConfig({
   site: {
-    url: "https://gbeardsell.github.io",
+    url: "https://gbeardsell.com",
     title: "Guillaume Beardsell",
     description: "Computational scientist and mechanical engineer",
     author: "Guillaume Beardsell",
