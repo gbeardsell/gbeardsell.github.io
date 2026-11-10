@@ -1,6 +1,6 @@
 ---
 title: "Part 3. What should a neural network learn when a weather forecast already exists?"
-pubDatetime: 2026-10-21T12:00:00Z
+pubDatetime: 2026-10-30T12:00:00Z
 description: "Combining high-resolution satellite data with an existing forecast to predict the next ten hours."
 draft: true
 categories:

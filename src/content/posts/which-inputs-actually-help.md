@@ -1,6 +1,6 @@
 ---
 title: "Part 4. Which inputs actually help?"
-pubDatetime: 2026-10-21T12:00:00Z
+pubDatetime: 2026-11-03T12:00:00Z
 description: "Testing which satellite inputs, weather forecasts, geographic maps, and model changes improve Fogcast’s ten-hour predictions."
 draft: true
 categories:
@@ -25,27 +25,27 @@ The clearest evidence came from taking inputs away. Removing satellite observati
 
 ## How I compared the models
 
-Each architecture changes one aspect of A. I trained every variant from scratch with the same learning-rate and regularization recipe, then selected checkpoints by validation binary cross-entropy (BCE). This compares the changes under a common training setup; it does not find the best settings for each architecture.
+Each architecture changes one aspect of A. I trained every variant from scratch with the same learning-rate and regularization recipe, then selected checkpoints by validation binary cross-entropy (BCE). This approach compares the changes under a common training setup; it does not independently find the best settings for each architecture.
 
-The evaluation uses all 5,219 TEST forecast issues. I score the predicted clear-sky probabilities with the Brier score, the mean squared difference between a probability $p$ and its corresponding label $y$, where 1 means clear and 0 means cloudy:
+The evaluation uses all 5,219 TEST forecast issues, drawn from historical data spanning January 2023 to July 2026. The predicted clear-sky probabilities are scored with the Brier score, the mean squared difference between a probability $p$ and its corresponding label $y$, where 1 means clear and 0 means cloudy:
 
 $$
 \operatorname{Brier} = \frac{1}{N}\sum_{i=1}^{N}(p_i-y_i)^2.
 $$
 
-Lower is better; a perfect forecast scores zero. The reported means give equal weight to all ten forecast horizons, from +1 to +10 hours.
+I chose the Brier score because it is the mean squared error (MSE) of the predicted probabilities. Taking its square root gives the root mean squared error (RMSE), expressed on the same scale as the probabilities themselves. Lower is better, with zero indicating a perfect match to the labels. The reported means weight all ten forecast horizons equally, from +1 to +10 hours.
 
-During daytime, I compare predictions with valid 500 m B2-derived labels. At night and under low Sun, I first average the predictions over native Clear Sky Mask (CSM) footprints, which have a nominal resolution of 2 km. The two evaluation regimes meet at a solar zenith angle of 82°, when the Sun is 8° above the horizon.
+For reference, a model that always predicts a 50% chance of cloud receives a Brier score of 0.25. Beating that is a basic requirement; improving on an existing weather forecast is the more meaningful test.
 
-[Figure 1](#figure-1) shows score differences relative to Model A trained with seed 42, abbreviated A42. Negative values mean lower error. The bars show approximate 95% uncertainty intervals that combine weather sampling and variation between training seeds. If an interval crosses zero, this calculation does not resolve whether the change helps or hurts. The [uncertainty note](#a-note-on-the-uncertainty) explains the assumptions.
+[Figure 1](#figure-1) shows score differences relative to a single training run of Model A. Negative values indicate lower error. The bars show approximate 95% uncertainty intervals that account for both weather sampling and variation across training seeds. An interval crossing zero means the comparison does not clearly establish whether the change helps or hurts. The [uncertainty note](#a-note-on-the-uncertainty) explains the assumptions.
 
-![Brier-score differences from A42 for eleven variants and blends, evaluated separately during daytime and at night or under low Sun. Removing NBM or all satellite observations causes the largest increases in error. I3’s nighttime interval lies entirely below zero.](../../assets/figures/which-inputs-actually-help/model-differences.png "Figure 1. Mean TEST Brier-score differences relative to A42. Gold: daytime. Blue: night or low Sun. Bars show approximate 95% intervals combining weather-sampling and training-seed uncertainty. A3 and I3 average three models’ probabilities. Here, I is the seed-42 run; Table 1 reports I’s three-run mean.")
+![Brier-score differences from A42 for eleven variants and blends, evaluated separately during daytime and at night or under low Sun. Removing NBM or all satellite observations causes the largest increases in error. I3’s nighttime interval lies entirely below zero.](../../assets/figures/which-inputs-actually-help/model-differences.png "Figure 1. Mean TEST Brier-score differences relative to A. Gold: daytime. Blue: night or low Sun. Bars show approximate 95% intervals combining weather-sampling and training-seed uncertainty. A3 and I3 average three models’ probabilities.")
 
 ## Start with the satellite observations
 
 Model B removes both current satellite inputs and their validity masks. It still receives NBM forecasts, geographic maps, and solar and seasonal context, but loses its direct view of the current clouds.
 
-The penalty is clear: mean Brier score rises by 0.0105 in daytime and 0.0162 at night relative to A42. The gap is largest at short leads, when a recent observation should be most useful ([Figure 2](#figure-2)).
+The penalty is clear: mean Brier score rises by 0.0105 in daytime and 0.0162 at night relative to A. As can be seen in [Figure 2](#figure-2), the gap is largest at short leads, when a recent observation should be most useful.
 
 Model D asks a narrower question: how much does the fine imagery add? It removes the 500 m B2-derived clear score and its validity mask while keeping the 2 km CSM observations. Daytime error rises by 0.0028, with an interval entirely above zero. The nighttime difference is small and unresolved.
 
@@ -53,53 +53,53 @@ Keeping coarse satellite observations therefore preserves much of A’s performa
 
 For reference, the plots also show **direct NBM**: the NBM cloud-cover forecast used on its own, converted to a clear-sky score as $1 - \mathrm{cloud\ cover}/100$.
 
-![Brier scores from one to ten hours ahead for A, B, D, and direct NBM. Removing all satellite observations raises error most strongly at short leads. Removing only fine B2 raises daytime error, while the nighttime A and D curves nearly overlap.](../../assets/figures/which-inputs-actually-help/satellite-inputs.png "Figure 2. Current satellite observations improve the forecast, especially at short leads. Left: daytime, evaluated against fine B2-derived labels. Right: night or low Sun, evaluated on native CSM footprints. Keeping CSM while removing fine B2 (D) preserves much of A’s performance, with a clear daytime penalty.")
+![Brier scores from one to ten hours ahead for A, B, D, and direct NBM. Removing all satellite observations raises error most strongly at short leads. Removing only fine B2 raises daytime error, while the nighttime A and D curves nearly overlap.](../../assets/figures/which-inputs-actually-help/satellite-inputs.png "Figure 2. Current satellite observations improve the forecast, especially at short leads. Left: daytime, evaluated against fine B2-derived labels. Right: night or low Sun, evaluated on native CSM footprints. Keeping CSM while removing fine B2 (Model D) preserves much of Model A’s performance, however with a clear daytime penalty.")
 
 ## A satellite snapshot is not enough for ten hours
 
-Model K keeps the satellite observations but removes all eleven NBM cloud-cover maps. I expected the forecast to suffer, especially at longer leads.
+Model K keeps the satellite observations but removes all eleven NBM cloud-cover forecast maps. I expected the forecast to suffer, especially at longer leads.
 
-For the first few hours, K still beats direct NBM. Around four to five hours ahead, that advantage disappears, and its error rises much faster than A’s. Across the ten horizons, removing NBM increases mean Brier score by 0.0327 in daytime and 0.0245 at night, the largest penalties in these experiments.
+For the first few hours, Model K still beats direct NBM. Around four to five hours ahead, that advantage disappears, and its error rises much faster than A’s. Across the ten horizons, removing NBM increases mean Brier score by 0.0327 in daytime and 0.0245 at night, the largest penalties in these experiments.
 
 The observations provide a detailed starting point; NBM provides guidance about what happens next. Both contribute to the combined forecast.
 
-![Brier-score curves for A, K, and direct NBM over ten forecast hours. K initially beats direct NBM but crosses it around hours four to five. A has lower error than both throughout the daytime and nighttime evaluations.](../../assets/figures/which-inputs-actually-help/nbm-guidance.png "Figure 3. Without NBM guidance, K loses its advantage over direct NBM around the fourth to fifth forecast hour. A combines observations and guidance and has lower error than both at every evaluated horizon. Left: daytime. Right: night or low Sun.")
+![Brier-score curves for A, K, and direct NBM over ten forecast hours. K initially beats direct NBM but crosses it around hours four to five. A has lower error than both throughout the daytime and nighttime evaluations.](../../assets/figures/which-inputs-actually-help/nbm-guidance.png "Figure 3. Without NBM guidance, Model K loses its advantage over direct NBM around the fourth to fifth forecast hour. Model A combines observations and guidance and has lower error than both at every evaluated horizon. Left: daytime. Right: night or low Sun.")
 
 ## Geography helps, too
 
-Model J removes land fraction, the fraction of each cell covered by land, and elevation. These maps provide geographic context: clouds over the ocean may behave differently from clouds over Mount Tamalpais.
+Model J removes two geographic inputs: land fraction, the proportion of each cell covered by land, and elevation. These maps give the network context for interpreting cloud patterns, which may evolve differently over the ocean than over Mount Tamalpais.
 
-Removing the maps raises mean Brier score by 0.0026 in daytime and 0.0029 at night. Both intervals exclude zero. The experiment does not explain how the network uses geography or separate the contributions of the two maps, but it supports keeping them in the model.
+Removing both maps raises the mean Brier score by 0.0026 in daytime and 0.0029 at night, with both uncertainty intervals entirely above zero. The experiment does not explain how the network uses geography, but it supports keeping them in the model.
 
 ## Three plausible additions without a clear gain
 
-Model C adds the previous hour’s satellite fields and validity masks. Two snapshots might help the network infer cloud movement, growth, and dissipation. Instead, its scores are slightly worse than A42’s, with both intervals crossing zero. The experiment did not establish a benefit. NBM may already provide some of the useful information about cloud evolution, but this comparison cannot confirm that explanation.
+Model C adds the previous hour’s satellite fields and validity masks. The intuition was that feeding the model two snapshots might help the network infer cloud movement, growth, and dissipation. Instead, its scores are slightly worse than Model A’s, with both intervals crossing zero. The experiment did not establish a benefit. NBM may already provide some of the useful information about cloud evolution, but this comparison cannot confirm that explanation.
 
 Model E adds NBM ensemble sky-cover spread and a validity mask, giving the network a measure of disagreement in the weather guidance. Model F adds probabilities of a cloud ceiling below 3,000 ft, supplementing A’s total cloud-cover forecasts. Neither produces a conclusive improvement under the common training recipe.
 
 ## Does more spatial context help?
 
-Through its convolution paths, Model A has an approximate one-sided reach of 43 km in each cardinal direction, much less than the domain’s 200 km width. I tested two ways to provide more spatial context.
+Through its convolution paths, Model A can draw on inputs up to roughly 43 km away in each cardinal direction. Near the domain edges, those paths can encounter padding instead of observations, potentially affecting a substantial portion of the map. Yet that reach is still much smaller than the domain’s 200 km width, limiting interactions between distant regions. I tested two changes to address these limitations.
 
-Model G adds four-head spatial attention at the bottleneck, allowing features at distant locations to interact directly. Nighttime Brier score rises by 0.0026, with an interval entirely above zero. The daytime difference remains unresolved.
+Model G adds four-head spatial attention at the bottleneck, allowing features at distant locations to interact directly. Nighttime Brier score rises by 0.0026, with an uncertainty interval entirely above zero. The daytime difference remains unresolved.
 
-The learning curves offer a clue ([Figure 4](#figure-4)). G eventually reaches lower training loss but higher validation loss than A, consistent with fitting relationships that do not generalize. The common training recipe may also suit G poorly; these experiments do not distinguish those explanations.
+The learning curves offer a clue ([Figure 4](#figure-4)). Model G eventually reaches lower training loss but higher validation loss than A, consistent with overfitting. The common training recipe may also be poorly suited to G; these experiments do not establish whether different settings would make attention useful.
 
 ![Training and validation BCE over thirty epochs for A and G. G eventually reaches slightly lower training loss but higher validation loss. Stars mark the selected checkpoints.](../../assets/figures/which-inputs-actually-help/attention-learning-curves.png "Figure 4. Adding attention lowers eventual training loss but raises validation loss. Dashed curves: training. Solid curves: validation. The combined objective is fine BCE + 0.25 × coarse BCE, averaged over ten horizons. Stars mark checkpoints selected by validation BCE.")
 
-Model I expands the input domain instead. It adds a 50 km margin on every side, so the network sees 300 × 300 km while forecasting the central 200 × 200 km. The margin extends beyond the approximate convolutional reach, providing observed context around the output boundary.
+Model I expands the input domain instead. It adds a 50 km margin on every side, so the network sees 300 × 300 km while forecasting the central 200 × 200 km. This margin exceeds the approximate convolutional reach, giving predictions near the output boundary access to surrounding observations.
 
-I has a lower nighttime point score, but its interval relative to A42 still crosses zero. The wider domain is promising, although this comparison alone does not establish that boundary effects hurt the baseline.
+Model I’s nighttime point score is lower, but its uncertainty interval relative to A still crosses zero. The result is promising, although it does not establish that the wider domain improves the forecast or that padding was hurting the baseline.
 
 ## Can three models do better than one?
 
-I trained A and I with three random seeds each, then averaged each group’s clear-sky probability maps at every location and forecast hour. These blends are A3 and I3. Their scores measure the error of the averaged probabilities, rather than the average error of their members.
+I trained Models A and I with three random seeds each, then averaged their clear-sky probabilities at every location and forecast hour to produce two blends, A3 and I3. I score the averaged predictions, rather than averaging the members’ scores.
 
-When members disagree, averaging can soften a confident error. It does not guarantee a better prediction than the best member on every sample.
+Averaging can reduce error when the members make different mistakes, although the blend will not necessarily outperform the best member on every sample.
 
-Both blends have lower point scores than A42. A3’s intervals cross zero in both regimes. I3 provides the clearest improvement: its nighttime interval lies entirely below zero, although its daytime interval still crosses zero.
+Both blends have lower estimated Brier scores than the single-run Model A reference. For A3, the uncertainty intervals for the score differences cross zero in both regimes. I3 shows clearer evidence of improvement at night, where its interval lies entirely below zero. Its daytime difference remains unresolved.
 
-![Brier-score curves for Model I trained with seed 42 and the three-seed blend I3. The blend has lower point errors at all ten displayed horizons in both evaluation regimes.](../../assets/figures/which-inputs-actually-help/three-seed-blend.png "Figure 5. Averaging three Model I probability maps lowers point errors at every displayed horizon compared with the seed-42 run. Solid curves: daytime. Dashed curves: night or low Sun. This comparison with one run differs from I’s three-run mean in Table 1.")
+![Brier-score curves for Model I trained with seed 42 and the three-seed blend I3. The blend has lower point errors at all ten displayed horizons in both evaluation regimes.](../../assets/figures/which-inputs-actually-help/three-seed-blend.png "Figure 5. Averaging three Model I probability maps lowers point errors at every displayed horizon compared with the single run. Solid curves: daytime. Dashed curves: night or low Sun.")
 
 I chose I3 for the final model: the wider input domain, with predictions averaged across three training seeds. It is a modest refinement of A, with the strongest evidence of improvement at night.
 
@@ -109,7 +109,7 @@ With those choices made, the next question is practical: how much better is the 
 
 ## The experiment ledger
 
-<p id="table-1">Table 1. Each change is relative to architecture A. Values are mean TEST Brier-score differences from A42, followed by approximate 95% intervals. Negative is better; A42’s self-comparison is zero. I reports the mean across three training runs. A3 and I3 report scores of averaged probability maps. The remaining variants each use one training run.</p>
+<p id="table-1">Table 1. Each change is relative to Model A. Values are mean TEST Brier-score differences from Model A, followed by approximate 95% intervals. A3 and I3 report scores of averaged probability maps. The remaining variants each use one training run.</p>
 
 <div class="table-scroll" role="region" aria-labelledby="table-1" tabindex="0">
 
@@ -131,8 +131,8 @@ With those choices made, the next question is practical: how much better is the 
 
 ## A note on the uncertainty
 
-The intervals combine two sources of uncertainty. Weather-sampling uncertainty comes from 10,000 paired TEST resamples, stratified by season. Each model is scored on the same weather selections, so the comparison tracks how their score difference varies across those samples.
+The approximate 95% intervals combine two sources of uncertainty and aim to be conservative. Weather-sampling uncertainty is estimated from 10,000 paired TEST resamples, stratified by season. Each model is evaluated on the same weather selections, allowing the comparison to track how their score difference varies across resamples.
 
-Training-seed uncertainty is estimated from three runs each of A and I. A pooled seed-variance estimate is also applied to variants trained only once. The calculation assumes weather and seed effects are independent and additive, then adds their variances. Each interval is the paired score difference ± 2.78 times the combined standard error. The multiplier uses the four degrees of freedom in the pooled seed estimate. For A3 versus A42, the calculation also accounts for their shared member.
+Training-seed uncertainty is estimated from three runs each of Models A and I. Their pooled seed-variance estimate is also applied to variants trained only once. Assuming independent, additive weather and seed effects, I add the two variance estimates to calculate the combined standard error.
 
-These are approximate intervals. With only three seeds for each reference architecture, applying a common variance estimate to other variants requires assumptions about how training variability transfers between models. An interval crossing zero means the experiment did not resolve the difference, not that the change could never help.
+Each interval is the paired score difference ± 2.78 times that standard error. The multiplier comes from [Student’s t distribution](https://www.itl.nist.gov/div898/handbook/eda/section3/eda3672.htm) with four degrees of freedom, corresponding to the pooled seed-variance estimate.

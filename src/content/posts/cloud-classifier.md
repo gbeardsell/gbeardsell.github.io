@@ -2,7 +2,7 @@
 title: "Part 2. From satellite brightness to a cloud mask"
 pubDatetime: 2026-10-25T12:00:00Z
 description: "How Fogcast builds a clear-sky reference, turns brightness residuals into cloud scores, and determines how much sunlight its daytime classifier needs."
-draft: true
+draft: false
 categories:
   - Fogcast
 tags:
