@@ -1,22 +1,19 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import Card from "@/components/Card.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 
+type Post = CollectionEntry<"posts">;
+const compareSeriesOrder = (a: Post, b: Post) =>
+  (a.data.series?.slug ?? "").localeCompare(b.data.series?.slug ?? "") ||
+  (a.data.series?.order ?? 0) - (b.data.series?.order ?? 0) ||
+  (b.data.modDatetime ?? b.data.pubDatetime).getTime() -
+    (a.data.modDatetime ?? a.data.pubDatetime).getTime();
+
 const allPosts = await getCollection("posts");
-const posts = getSortedPosts(allPosts);
+const posts = getSortedPosts(allPosts).sort(compareSeriesOrder);
 const drafts = import.meta.env.DEV
-  ? allPosts
-      .filter(post => post.data.draft)
-      .sort(
-        (a, b) =>
-          (a.data.series?.slug ?? "").localeCompare(
-            b.data.series?.slug ?? ""
-          ) ||
-          (a.data.series?.order ?? 0) - (b.data.series?.order ?? 0) ||
-          (b.data.modDatetime ?? b.data.pubDatetime).getTime() -
-            (a.data.modDatetime ?? a.data.pubDatetime).getTime()
-      )
+  ? allPosts.filter(post => post.data.draft).sort(compareSeriesOrder)
   : [];
 ---
 
