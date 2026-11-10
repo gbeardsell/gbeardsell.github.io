@@ -37,7 +37,7 @@ $$
 p_{\mathrm{clear}} = 1 - \frac{C}{100}
 $$
 
-This is the weather guidance supplied to Fogcast, evaluated on its own. 
+This is the weather guidance supplied to Fogcast, evaluated on its own.
 
 ## Use the information available at issue time
 
@@ -47,7 +47,7 @@ Persistence uses the latest eligible satellite observations. Fogcast combines th
 
 ## Score the probabilities
 
-The main metric is the **Brier score**, the mean squared difference between the forecast clear-sky probability and the target label: 1 for clear, 0 for cloudy. 
+The main metric is the **Brier score**, the mean squared difference between the forecast clear-sky probability and the target label: 1 for clear, 0 for cloudy.
 
 For a clear label of 1, a prediction of 0.8 contributes $(0.8-1)^2 = 0.04$, while a prediction of 0.2 contributes $(0.2-1)^2 = 0.64$. Confident mistakes receive a larger penalty.
 
@@ -69,12 +69,12 @@ This pattern agrees with the ablations in the previous post. Removing satellite 
 
 <div class="table-scroll" role="region" aria-labelledby="table-1" tabindex="0">
 
-| Forecast | Daytime · fine | Night · coarse |
-| --- | ---: | ---: |
-| Persistence | 0.2183 | 0.2084 |
-| Climatology | 0.2046 | 0.2103 |
-| Direct NBM | 0.1156 | 0.1332 |
-| Model I · three-seed blend (I3) | **0.0899** | **0.1057** |
+| Forecast                        | Daytime · fine | Night · coarse |
+| ------------------------------- | -------------: | -------------: |
+| Persistence                     |         0.2183 |         0.2084 |
+| Climatology                     |         0.2046 |         0.2103 |
+| Direct NBM                      |         0.1156 |         0.1332 |
+| Model I · three-seed blend (I3) |     **0.0899** |     **0.1057** |
 
 </div>
 

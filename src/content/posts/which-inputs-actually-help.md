@@ -2,7 +2,7 @@
 title: "Part 4. Which inputs actually help?"
 pubDatetime: 2026-11-05T12:00:00Z
 description: "Testing which satellite inputs, weather forecasts, geographic maps, and model changes improve Fogcast’s ten-hour predictions."
-draft: true
+draft: false
 categories:
   - Fogcast
 tags:
@@ -105,7 +105,7 @@ I chose I3 for the final model: the wider input domain, with predictions average
 
 The experiments also support the original choice of inputs. Current satellite observations, NBM guidance, and geography all improve the forecast. Solar and seasonal context remain in the recipe, although I did not test removing them. Most additions fail to show a clear gain under this training setup.
 
-With those choices made, the next question is practical: how much better is the forecast than existing weather guidance, or simply assuming the clouds will stay where they are? That is the focus of [Part 5. Is the neural network better, or does it just draw prettier maps?](/writing/does-fogcast-earn-its-detail/).
+With those choices made, the next question is practical: how much better is the forecast than existing weather guidance, or simply assuming the clouds will stay where they are? That is the focus of [Part 5. Is the neural network better, or does it just draw pretty maps?](/writing/does-fogcast-earn-its-detail/).
 
 ## The experiment ledger
 

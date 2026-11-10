@@ -77,6 +77,4 @@ During daytime, the forecast model would train on this new B2-derived clear scor
 
 ## TL;DR
 
-I set out to forecast cloud cover over the next ten hours, but first I needed to distinguish clouds from the surface in visible-band satellite images. That led to a two-step daytime pipeline: estimate how the surface should look under clear skies for the current sun angle and season, then look for departures from that reference. The next post will walk through this process, from satellite image to cloud mask.
-
-<!-- Link "next post" to /writing/cloud-classifier/ once Part 2 is published. -->
+I set out to forecast cloud cover over the next ten hours, but first I needed to distinguish clouds from the surface in visible-band satellite images. That led to a two-step daytime pipeline: estimate how the surface should look under clear skies for the current sun angle and season, then look for departures from that reference. The [next post](/writing/cloud-classifier/) walks through this process, from satellite image to cloud mask.
