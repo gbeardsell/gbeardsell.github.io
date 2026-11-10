@@ -1,6 +1,6 @@
 ---
 title: "Part 4. Which inputs actually help?"
-pubDatetime: 2026-11-03T12:00:00Z
+pubDatetime: 2026-11-05T12:00:00Z
 description: "Testing which satellite inputs, weather forecasts, geographic maps, and model changes improve Fogcast’s ten-hour predictions."
 draft: true
 categories:
