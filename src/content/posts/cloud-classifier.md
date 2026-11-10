@@ -169,4 +169,6 @@ Based on these results, I set the daytime/nighttime cutoff at 82° solar zenith 
 
 ![Clear and cloud recall versus solar zenith angle, comparing the fitted classifier with thresholds selected directly from the fitting labels.](../../assets/figures/cloud-classifier/goes_b2_best_divider_and_retained_fit_recall.png "Figure 7. Clear recall (teal) and cloud recall (red) plotted against solar zenith angle. Dashed curves show the fitted classifier.Solid curves are optimistic fitting diagnostics: thresholds chosen directly from fitting labels to maximize balanced accuracy within each group (,i.e.,  each pixel and 1° solar-elevation bin, separately for sunrise and sunset). The dotted line marks the chosen daytime cutoff of 82° zenith, equivalent to 8° elevation.")
 
-I now had cloud labels from frequent daytime satellite images and coarser CSM labels after dark. The next step was to turn those observations into a ten-hour cloud-cover forecast, building on existing weather guidance. That is the focus of [Part 3: What should a neural network learn when a weather forecast already exists?](/writing/model-architecture/).
+I now had cloud labels from frequent daytime satellite images and coarser CSM labels after dark. The next step was to turn those observations into a ten-hour cloud-cover forecast, building on existing weather guidance. That is the focus of Part 3: What should a neural network learn when a weather forecast already exists?
+
+<!-- Link the Part 3 reference to /writing/model-architecture/ once Part 3 is published. -->
