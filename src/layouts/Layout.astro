@@ -1,5 +1,7 @@
 ---
 import config from "@/config";
+import GoogleAnalytics from "@/components/GoogleAnalytics.astro";
+import { PUBLIC_GOOGLE_ANALYTICS_ID } from "astro:env/client";
 import "@/styles/global.css";
 
 type Props = {
@@ -31,6 +33,11 @@ const socialImageURL = new URL(ogImage, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {
+      import.meta.env.PROD && PUBLIC_GOOGLE_ANALYTICS_ID?.trim() && (
+        <GoogleAnalytics />
+      )
+    }
     <link rel="icon" type="image/png" sizes="96x96" href="/fogcast-icon.png" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />

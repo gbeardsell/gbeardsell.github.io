@@ -40,6 +40,92 @@ Use `corepack pnpm format` to apply the project's formatting. Review the changed
 
 The site uses local system fonts. To update the social preview image, edit `src/assets/social-card.svg` and run `node scripts/generate-social-card.mjs`; commit the resulting `public/social-card.png` with the source change.
 
+## Google Analytics
+
+GA4 is wired into the shared layout, including article pages. Tracking stays off
+until `PUBLIC_GOOGLE_ANALYTICS_ID` is supplied at build time. The production tag
+only runs on the hostname in `site.url` (`gbeardsell.com`); development, localhost
+production previews, and copies hosted on other domains do not send visits.
+Invalid IDs fail the build. The Google tag loads asynchronously, with Google
+signals and advertising personalization disabled. It uses standard GA4 cookies;
+this integration does not include a consent banner or consent management.
+
+### Create the property and web stream
+
+1. Open [Google Analytics](https://analytics.google.com/) using the Google account
+   that should own the site's reports.
+2. In **Admin**, use the account/property picker to check whether a property for
+   `gbeardsell.com` already exists. Reuse it if it does. Keep this site's property
+   separate from Fogcast so the two sites have independent reports.
+3. If needed, choose **Create → Property** in the intended Analytics account.
+   Name it `gbeardsell.com`, set the reporting time zone to **United States →
+   Los Angeles** (Pacific Time), and set currency to **US Dollar**. Continue
+   through the business details and choose **Understand web and/or app traffic**
+   as the objective. If you do not have an Analytics account yet, start with
+   **Start measuring** and create one first.
+4. Choose **Web** when asked to add a data stream. Enter `https://gbeardsell.com`
+   as the website URL and `gbeardsell.com web` as the stream name. Leave
+   **Enhanced measurement** on, then create the stream.
+5. Copy the **Measurement ID**, which starts with `G-`. If the stream already
+   exists, find it under **Admin → Data collection and modification → Data
+   streams → your web stream**. Use the Measurement ID, not the numeric property
+   ID, stream ID, a `GTM-` container ID, or a Search Console verification code.
+   You do not need to paste Google's installation snippet into the site.
+
+See [Google's setup instructions](https://support.google.com/analytics/answer/9304153?hl=en).
+
+### Enable tracking on GitHub Pages
+
+1. Open the repository's [Actions variables settings](https://github.com/gbeardsell/gbeardsell.github.io/settings/variables/actions).
+   The GitHub account you use must have permission to manage this repository.
+2. Click **New repository variable**. Set **Name** to
+   `PUBLIC_GOOGLE_ANALYTICS_ID` and **Value** to the actual `G-…` Measurement ID.
+   Click **Add variable**. Use a repository variable, not an environment variable
+   scoped only to the `github-pages` deployment job. The ID is public and is not
+   an API key.
+3. Commit and push the Analytics integration to `main` to trigger the existing
+   deployment workflow. If the integration is already deployed when you add or
+   change the variable, open **Actions → Deploy to GitHub Pages → Run workflow →
+   main → Run workflow**. Changing the variable alone does not rebuild the site.
+4. Wait until both the `build` and `deploy` jobs succeed. This is a static site:
+   the value is embedded during the build, not read when a visitor opens a page.
+
+If the GitHub CLI is authenticated as an account with repository access, step 2
+can also be done with this command, replacing the example ID:
+
+```sh
+gh variable set PUBLIC_GOOGLE_ANALYTICS_ID --repo gbeardsell/gbeardsell.github.io --body G-XXXXXXXXXX
+```
+
+For a local production build that includes the tag, copy `.env.example` to
+`.env` and fill in the ID before running `corepack pnpm build`. The `.env` file
+is ignored by Git. Localhost still does not send tracking requests.
+
+### Confirm data is arriving
+
+1. Open `https://gbeardsell.com` in a browser without an ad/tracking blocker.
+   Visit the home page and an article. Testing `localhost` will not send data.
+2. In the `gbeardsell.com` Analytics property, open **Reports → Realtime
+   overview**. Allow a few minutes for your visit and `page_view` events to show.
+   With Enhanced measurement enabled, scrolling to 90% of an article and clicking
+   an external link can also produce `scroll` and `click` events. These events
+   come from Google's tag, so no extra click handler is needed.
+3. If nothing appears, open the site's page source and search for your actual
+   Measurement ID. If it is missing, check the repository variable and rebuild.
+   If it is present, check the browser's Network panel for `gtag/js` and
+   `g/collect`, confirm the request uses your Measurement ID, and check whether
+   the browser or an extension blocked the requests.
+4. Allow **24–48 hours** for standard reports to populate. Use **Pages and
+   screens** to see which articles get read and **Traffic acquisition** to see
+   where visits come from. Analytics starts collecting after deployment; it
+   cannot recover earlier visits.
+
+See Google's [Enhanced measurement reference](https://support.google.com/analytics/answer/9216061?hl=en)
+and [data freshness guidance](https://support.google.com/analytics/answer/11198161?hl=en).
+
+To disable tracking, remove the repository variable and run the deployment
+workflow again. No Google Tag Manager setup is required for this integration.
+
 ## Where to edit
 
 | Location                         | Purpose                                                                     |
