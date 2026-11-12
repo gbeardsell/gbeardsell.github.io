@@ -8,7 +8,7 @@ categories:
 tags:
   - numerical-methods
 series:
-  name: "Fogcast notes"
+  name: "Building Fogcast"
   slug: fogcast-notes
   order: 1
 ---
@@ -48,6 +48,6 @@ Keep article figures in `src/assets/figures/`. Use descriptive alt text, a relat
 
 ## Categories and series
 
-The frontmatter assigns this example to the Fogcast category and to part 1 of the Fogcast notes series. Category and series pages appear when their first article is published. Keep the same series name and slug across articles, and use a positive integer for each article's reading order.
+The frontmatter assigns this example to the Fogcast category and to part 1 of the Building Fogcast series. Category and series pages appear when their first article is published. Keep the same series name and slug across articles, and use a positive integer for each article's reading order.
 
 Articles with a future `pubDatetime` stay out of public pages and feeds until a build runs after that time. Draft articles can be previewed at their normal URL while running the development server.

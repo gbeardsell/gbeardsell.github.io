@@ -1,11 +1,9 @@
 ---
 import PageLayout from "@/layouts/PageLayout.astro";
 import BlogPosts from "@/components/BlogPosts.astro";
+const description = "Notes on some of my personal projects.";
 ---
 
-<PageLayout
-  title="Blog"
-  description="Notes on scientific computing, numerical methods, and building Fogcast."
->
-  <BlogPosts />
+<PageLayout title="Writing" {description}>
+  <BlogPosts {description} />
 </PageLayout>

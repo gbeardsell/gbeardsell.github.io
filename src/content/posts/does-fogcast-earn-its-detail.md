@@ -10,7 +10,7 @@ tags:
   - forecast-verification
   - machine-learning
 series:
-  name: "Fogcast notes"
+  name: "Building Fogcast"
   slug: fogcast-notes
   order: 5
 ---

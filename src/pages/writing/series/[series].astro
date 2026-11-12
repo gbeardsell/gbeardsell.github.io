@@ -12,20 +12,49 @@ export async function getStaticPaths() {
 }
 type Props = { group: WritingGroup };
 const { group } = Astro.props;
+const name = group.name;
 ---
 
-<PageLayout
-  title={`${group.name} | Writing`}
-  description={`Read ${group.name} in order.`}
->
+<PageLayout title={`${name} | Writing`} description={`Read ${name} in order.`}>
   <a class="text-link" href="/writing/">← All writing</a>
   <p class="eyebrow">Series</p>
-  <h1 class="page-heading">{group.name}</h1>
+  <h1 class="page-heading">{name}</h1>
   <p class="lede">
     {group.posts.length}
     {group.posts.length === 1 ? "article" : "articles"}, in reading order.
   </p>
-  <ol class="article-list" aria-label={`${group.name} reading order`}>
+  {
+    group.slug === "fogcast-notes" && (
+      <p>
+        Explore the{" "}
+        <a class="text-link" href="https://fogcast.today">
+          live forecast ↗
+        </a>{" "}
+        and{" "}
+        <a class="text-link" href="https://github.com/gbeardsell/fogcast">
+          code on GitHub ↗
+        </a>
+        .
+      </p>
+    )
+  }
+  <ol class="series-articles" aria-label={`${name} reading order`}>
     {group.posts.map(post => <Card {...post} />)}
   </ol>
 </PageLayout>
+
+<style>
+  .series-articles {
+    max-width: 46rem;
+    margin: 0;
+    padding-inline-start: 1.8rem;
+    list-style: decimal;
+  }
+  .series-articles :global(.article-card) {
+    padding-inline-start: 0.4rem;
+  }
+  .series-articles :global(.article-card::marker) {
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

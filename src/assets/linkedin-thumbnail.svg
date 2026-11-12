@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="627" viewBox="0 0 1200 627">
+  <rect width="1200" height="627" fill="#faf9f6"/>
+  <path d="M80 130h1040M80 503h1040" fill="none" stroke="#d9dedb"/>
+  <text x="80" y="96" font-family="Georgia, 'Times New Roman', serif" font-size="50" letter-spacing="-3" fill="#245c74">GB</text>
+  <text x="80" y="270" font-family="Georgia, 'Times New Roman', serif" font-size="80" letter-spacing="-2" fill="#242e33">Guillaume Beardsell</text>
+  <text x="84" y="350" font-family="Arial, Helvetica, sans-serif" font-size="38" fill="#5b686e">Personal website</text>
+  <text x="84" y="557" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#245c74">gbeardsell.com</text>
+</svg>

@@ -1,0 +1,109 @@
+---
+import { Image } from "astro:assets";
+import type { Publication } from "@/data/publications";
+
+type Props = { publication: Publication };
+const { publication } = Astro.props;
+const { image } = publication;
+const imageWidths = image
+  ? [...new Set([160, 320, 640].map(width => Math.min(width, image.src.width)))]
+  : [];
+---
+
+<li class:list={["publication-entry", { "has-image": image }]}>
+  {
+    image && (
+      <figure>
+        <Image
+          src={image.src}
+          alt={image.alt}
+          widths={imageWidths}
+          sizes="(max-width: 650px) min(320px, calc(100vw - 3rem)), 160px"
+          format="webp"
+          loading="lazy"
+          decoding="async"
+        />
+        {image.caption && <figcaption>{image.caption}</figcaption>}
+      </figure>
+    )
+  }
+  <div class="citation">
+    <h3><a href={publication.href}>{publication.title}</a></h3>
+    <p class="publication-authors">
+      {
+        publication.authors.map((author, index) => (
+          <Fragment>
+            {index > 0 && ", "}
+            {author === "Guillaume Beardsell" ? (
+              <strong>{author}</strong>
+            ) : (
+              author
+            )}
+          </Fragment>
+        ))
+      }
+    </p>
+    <p class="publication-venue">{publication.venue}</p>
+  </div>
+</li>
+
+<style>
+  .publication-entry {
+    margin-bottom: 1.75rem;
+  }
+  .has-image {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+  }
+  figure {
+    width: 100%;
+    margin: 0;
+  }
+  figure :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  figcaption {
+    margin-top: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+  h3 {
+    margin: 0 0 0.5rem;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.2rem;
+    line-height: 1.45;
+    font-weight: 400;
+    text-wrap: pretty;
+  }
+  h3 a {
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--border);
+  }
+  h3 a:hover {
+    text-decoration-color: currentColor;
+  }
+  .publication-authors,
+  .publication-venue {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin: 0;
+  }
+  .publication-venue {
+    margin-top: 0.25rem;
+    color: var(--muted-foreground);
+  }
+  @media (max-width: 650px) {
+    .has-image {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+    figure {
+      max-width: 320px;
+    }
+  }
+</style>

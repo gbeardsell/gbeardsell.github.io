@@ -2,6 +2,10 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import Card from "@/components/Card.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
+import { getSeriesGroups } from "@/utils/writing";
+
+type Props = { description: string };
+const { description } = Astro.props;
 
 type Post = CollectionEntry<"posts">;
 const compareSeriesOrder = (a: Post, b: Post) =>
@@ -11,22 +15,73 @@ const compareSeriesOrder = (a: Post, b: Post) =>
     (a.data.modDatetime ?? a.data.pubDatetime).getTime();
 
 const allPosts = await getCollection("posts");
-const posts = getSortedPosts(allPosts).sort(compareSeriesOrder);
+const posts = getSortedPosts(allPosts);
+const series = getSeriesGroups(posts);
+const articles = posts.filter(post => !post.data.series);
 const drafts = import.meta.env.DEV
   ? allPosts.filter(post => post.data.draft).sort(compareSeriesOrder)
   : [];
 ---
 
-<div class="blog">
-  <h1 class="page-heading">Building Fogcast</h1>
+<div class="writing">
+  <h1 class="page-heading">Writing</h1>
+  <p class="lede">{description}</p>
   {
-    posts.length > 0 ? (
-      <ul class="article-list" aria-label="Published posts">
-        {posts.map(post => (
-          <Card {...post} />
-        ))}
-      </ul>
-    ) : drafts.length === 0 ? (
+    series.map(group => (
+      <section class="writing-section" aria-labelledby={`series-${group.slug}`}>
+        <h2 id={`series-${group.slug}`} class="section-heading">
+          <span class="series-heading">
+            {group.slug === "fogcast-notes" && (
+              <img
+                class="series-icon"
+                src="/fogcast-icon.png"
+                alt=""
+                width="32"
+                height="32"
+              />
+            )}
+            <span class="series-title">{group.name}</span>
+          </span>
+        </h2>
+        {group.slug === "fogcast-notes" ? (
+          <p class="series-intro">
+            A series on building a Bay Area clear-sky forecast, from satellite
+            observations to model evaluation. Read the articles in order, or
+            explore the{" "}
+            <a class="text-link" href="https://fogcast.today">
+              live forecast ↗
+            </a>{" "}
+            and{" "}
+            <a class="text-link" href="https://github.com/gbeardsell/fogcast">
+              code on GitHub ↗
+            </a>
+            .
+          </p>
+        ) : null}
+        <ol class="series-articles" aria-label={`${group.name} reading order`}>
+          {group.posts.map(post => (
+            <Card {...post} variant="h3" />
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+  {
+    articles.length > 0 && (
+      <section class="writing-section" aria-labelledby="articles-heading">
+        <h2 id="articles-heading" class="section-heading">
+          Articles
+        </h2>
+        <ul class="article-list" aria-label="Articles, newest first">
+          {articles.map(post => (
+            <Card {...post} variant="h3" />
+          ))}
+        </ul>
+      </section>
+    )
+  }
+  {
+    posts.length === 0 && drafts.length === 0 ? (
       <div class="empty-state">
         <p>No posts published yet.</p>
       </div>
@@ -34,7 +89,7 @@ const drafts = import.meta.env.DEV
   }
   {
     drafts.length > 0 && (
-      <section class="drafts-section" aria-labelledby="drafts-heading">
+      <section class="writing-section" aria-labelledby="drafts-heading">
         <h2 id="drafts-heading" class="section-heading">
           Drafts
         </h2>
@@ -52,10 +107,45 @@ const drafts = import.meta.env.DEV
 </div>
 
 <style>
-  .blog {
+  .writing {
     max-width: 46rem;
   }
-  .drafts-section {
-    margin-top: 3rem;
+  .writing-section {
+    margin-top: 3.5rem;
+  }
+  .series-heading {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 0.75rem;
+    vertical-align: middle;
+  }
+  .series-title {
+    min-width: 0;
+    text-wrap: wrap;
+  }
+  .series-icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    margin: 0;
+    border-radius: 0.35rem;
+  }
+  .series-intro {
+    max-width: 65ch;
+    color: var(--muted-foreground);
+  }
+  .series-articles {
+    margin: 0;
+    padding-inline-start: 1.8rem;
+    list-style: decimal;
+  }
+  .series-articles :global(.article-card) {
+    padding-inline-start: 0.4rem;
+  }
+  .series-articles :global(.article-card::marker) {
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
   }
 </style>

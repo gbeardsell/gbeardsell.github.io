@@ -1,6 +1,8 @@
 # Guillaume Beardsell's website
 
-A static blog, built with AstroPaper. The home page lists blog posts and links to [fogcast.today](https://fogcast.today), the [public Fogcast repository](https://github.com/gbeardsell/fogcast), and [LinkedIn](https://www.linkedin.com/in/guillaume-beardsell). The initial address is `https://gbeardsell.github.io`; `gbeardsell.com` is the later custom domain.
+A personal website, built with AstroPaper, with the canonical URL `https://gbeardsell.com`. The homepage introduces Guillaume's scientific background. `/publications/` lists peer-reviewed papers and his Caltech PhD thesis, newest first, with linked titles and Guillaume's name bold in each author list.
+
+The header links to **Home · Writing · Publications · LinkedIn ↗**, and the site name links home. Publications links to the internal `/publications/` page. A simple GB monogram serves as the header icon and favicon. `/writing/` groups the five published Fogcast articles into an ordered “Building Fogcast” series and supports future series and standalone articles on other topics. Links to [fogcast.today](https://fogcast.today) and the [public Fogcast repository](https://github.com/gbeardsell/fogcast) sit within the relevant writing content. There is no separate About page, résumé download, public email address, or contact form.
 
 ## Local setup
 
@@ -13,7 +15,7 @@ corepack pnpm install --frozen-lockfile
 corepack pnpm dev
 ```
 
-Open the address printed by Astro, normally `http://localhost:4321`. Stop the server with `Ctrl+C`.
+Open the address printed by Astro, normally `http://localhost:4321`. Use `corepack pnpm dev` while editing: Astro reloads the browser when you save changes. Stop the server with `Ctrl+C`.
 
 Commands use `corepack pnpm` so they also work on Windows when a standalone `pnpm` command has not been enabled. Node 24 includes Corepack. If it is missing from your installation, use the following prefix in place of `corepack pnpm`; it does not require a global installation:
 
@@ -34,7 +36,7 @@ corepack pnpm check:publication
 corepack pnpm preview --host 127.0.0.1 --port 4321
 ```
 
-`build` checks Astro/TypeScript, generates the static site in `dist/`, and builds the Pagefind search index. `check:publication` inspects that production output for publication leaks and broken internal links. Run it after a fresh build. The preview serves the built site, so rebuild after editing. There is currently no public search page.
+`build` checks Astro/TypeScript, generates the static site in `dist/`, and builds the Pagefind search index. `check:publication` inspects that production output for publication leaks and broken internal links. Run it after a fresh build. `preview` serves the last build in `dist/`; it does not reload source edits. Run `corepack pnpm build` again to see changes in production preview, or use `corepack pnpm dev` for live editing. There is currently no public search page.
 
 Use `corepack pnpm format` to apply the project's formatting. Review the changed files afterward. Before publishing, inspect the main pages at desktop and mobile widths, keyboard navigation, and any new article's equations, figures, and code blocks.
 
@@ -128,22 +130,28 @@ workflow again. No Google Tag Manager setup is required for this integration.
 
 ## Where to edit
 
-| Location                         | Purpose                                                                     |
-| -------------------------------- | --------------------------------------------------------------------------- |
-| `astro-paper.config.ts`          | Site name, description, and public URL.                                     |
-| `src/pages/`                     | Blog home, article routes, and generated category and series indexes.       |
-| `src/components/Header.astro`    | Blog navigation and the three external links.                               |
-| `src/components/BlogPosts.astro` | Complete post list and development-only drafts.                             |
-| `src/content/posts/`             | Markdown articles.                                                          |
-| `src/content.config.ts`          | Article frontmatter schema.                                                 |
-| `src/assets/figures/`            | Article figures referenced from Markdown.                                   |
-| `src/styles/`                    | Global and article styles.                                                  |
-| `public/`                        | Assets copied directly to the public site.                                  |
-| `astro.config.ts`                | Astro integrations and Markdown processing.                                 |
-| `.github/workflows/deploy.yml`   | Build, checks, and GitHub Pages deployment.                                 |
-| `TODO.md`                        | Content and publication tasks that still need decisions or source material. |
+| Location                                | Purpose                                                                                              |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `astro-paper.config.ts`                 | Site name, description, and public URL.                                                              |
+| `src/pages/`                            | Personal homepage, Publications, Writing, article routes, and generated category and series indexes. |
+| `src/pages/writing/index.astro`         | Writing introduction: its description supplies both the visible text and page metadata.              |
+| `src/data/publications.ts`              | Metadata and source links for peer-reviewed papers and the Caltech PhD thesis.                       |
+| `src/components/Header.astro`           | Site name, GB icon, and Home, Writing, Publications, and LinkedIn navigation.                        |
+| `src/components/BlogPosts.astro`        | Writing grouped by series, standalone articles, and development-only drafts.                         |
+| `src/components/PublicationEntry.astro` | Publication citations and optional images.                                                           |
+| `pictures/publications/`                | One image folder per publication entry, with folder mappings and instructions in its README.         |
+| `src/content/posts/`                    | Markdown articles.                                                                                   |
+| `src/content.config.ts`                 | Article frontmatter schema.                                                                          |
+| `src/assets/figures/`                   | Article figures referenced from Markdown.                                                            |
+| `src/styles/`                           | Global and article styles.                                                                           |
+| `public/`                               | Assets copied directly to the public site.                                                           |
+| `astro.config.ts`                       | Astro integrations and Markdown processing.                                                          |
+| `.github/workflows/deploy.yml`          | Build, checks, and GitHub Pages deployment.                                                          |
+| `TODO.md`                               | Content and publication tasks that still need decisions or source material.                          |
 
-The blog appears at `/` and `/writing/`; articles keep their `/writing/<slug>/` URLs. About, Projects, and Search pages are omitted from this release. There is no repository-name base path because the target repository is `gbeardsell/gbeardsell.github.io`.
+The personal homepage appears at `/`, the papers and PhD thesis at `/publications/`, and the article index at `/writing/`. Articles keep their existing `/writing/<slug>/` URLs, including the five Fogcast articles. About, Projects, and Search pages are omitted. There is no repository-name base path because the target repository is `gbeardsell/gbeardsell.github.io`.
+
+To add an image to a publication entry, place one raster image with any filename in its mapped folder under `pictures/publications/`. Paper folders use `YYYY_FirstAuthor_Journal/`; the PhD thesis uses `2021_Beardsell_Caltech_Thesis/`. See [the folder mappings and instructions](pictures/publications/README.md). Add an optional `alt.txt` in the same folder to describe the image. The development server reloads automatically; production preview and deployment require a new build.
 
 ## Write an article
 
@@ -158,7 +166,7 @@ draft: true
 categories:
   - Fogcast
 series:
-  name: "Fogcast notes"
+  name: "Building Fogcast"
   slug: "fogcast-notes"
   order: 1
 ---
@@ -166,9 +174,9 @@ series:
 
 `title`, `pubDatetime`, and `description` are required. `draft` defaults to `true`; set it explicitly. `categories` groups articles by subject. `series` is optional: omit the whole block for a standalone article, or use the same name and slug with increasing positive order numbers for a sequence. Tags and `modDatetime` are optional.
 
-Category and series pages are generated from published articles, such as `/writing/category/fogcast/` and `/writing/series/fogcast-notes/`. When no articles have been published, the production blog shows an empty state.
+Category and series pages are generated from published articles, such as `/writing/category/fogcast/` and `/writing/series/fogcast-notes/`. The Fogcast series keeps its existing slug and displays as “Building Fogcast.” `/writing/` groups each series in reading order and lists standalone articles newest first. Empty article sections are omitted; when no articles have been published, Writing shows an empty state.
 
-The unpublished [authoring example](src/content/posts/_authoring-example.md) demonstrates headings, highlighted code, equations, a captioned figure, and series metadata. Its leading underscore excludes it from the content collection, including the local preview. To inspect it locally, temporarily rename it to `authoring-example.md` and run `corepack pnpm dev`. Keep this instructional example as a draft.
+The unpublished [authoring example](src/content/posts/examples/_authoring-example.md) demonstrates headings, highlighted code, equations, a captioned figure, and series metadata. Its leading underscore excludes it from the content collection, including the local preview. To inspect it locally, temporarily rename it to `authoring-example.md` and run `corepack pnpm dev`. Keep this instructional example as a draft.
 
 ### Equations, code, and figures
 
@@ -200,20 +208,20 @@ Numbered captions such as `Figure 1.` also create an anchor, so use `[Figure 1](
 4. Run the checks and production preview above. Verify the article, category/series links, and RSS.
 5. Commit and push the reviewed source when ready to publish.
 
-Production excludes drafts and future-dated articles from article routes, listings, RSS, sitemap, social-image routes, and search. In development, drafts appear in a separate Drafts section on `/` and `/writing/`, and drafts and future-dated articles remain directly viewable at their article URLs. The two current Fogcast posts are still drafts and must be explicitly marked `draft: false` before they appear in production. This is a static site: a future-dated article requires another build once its publication time arrives; the workflow does not schedule that build automatically.
+Production excludes drafts and future-dated articles from article routes, listings, RSS, sitemap, social-image routes, and search. In development, drafts appear in a separate Drafts section on `/writing/`, and drafts and future-dated articles remain directly viewable at their article URLs. All five current Fogcast articles are published with `draft: false`. This is a static site: a future-dated article requires another build once its publication time arrives; the workflow does not schedule that build automatically.
 
 Draft status controls the generated site, not access to source files in a public repository. Assets under `public/` are copied to every production build, regardless of article draft status.
 
-## First deployment to GitHub Pages
+## Deployment to GitHub Pages
 
 The workflow follows [Astro's official GitHub Pages guide](https://docs.astro.build/en/guides/deploy/github/). It uses Node 24 and the pinned pnpm version, runs lint, formatting, build, and publication checks, then uploads `dist/` and deploys it.
 
 1. In `gbeardsell/gbeardsell.github.io`, open **Settings → Pages** and choose **GitHub Actions** as the source.
-2. Keep `site.url` in `astro-paper.config.ts` set to `https://gbeardsell.github.io`. Leave Astro's `base` unset.
+2. Keep `site.url` in `astro-paper.config.ts` set to `https://gbeardsell.com`. Leave Astro's `base` unset.
 3. After reviewing the local result, commit the source and lockfile and push to `main`. The push triggers the workflow. You can also run **Deploy to GitHub Pages** manually from the Actions tab.
 4. Wait for both jobs to succeed, then check the public home page, navigation, article URLs, and assets.
 
-This implementation prepares deployment; publishing and DNS changes are separate steps. The first successful deployment should use the GitHub address before changing the domain.
+Review changes locally before committing and pushing. Publishing and DNS changes remain separate steps; the current local update does not push or deploy the site.
 
 To deploy an already reviewed local commit:
 
@@ -225,7 +233,7 @@ git push origin main
 For later edits, stage the files you reviewed and commit them before pushing:
 
 ```sh
-git add src public astro-paper.config.ts astro.config.ts package.json pnpm-lock.yaml
+git add src public pictures astro-paper.config.ts astro.config.ts package.json pnpm-lock.yaml
 git diff --cached
 git commit -m "Update website"
 git push origin main
@@ -233,7 +241,9 @@ git push origin main
 
 Include any other intentionally changed files, such as the workflow or README, in the staging command.
 
-## Later migration to gbeardsell.com
+## Custom-domain configuration
+
+The site already uses `https://gbeardsell.com` as its canonical URL. These instructions document the domain setup; check existing settings before changing them.
 
 First verify ownership in your **GitHub account Settings → Pages → Add a domain**. Enter `gbeardsell.com`, add GitHub's exact TXT record at Porkbun, then complete verification. Keep that TXT record. [GitHub domain verification](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages)
 
@@ -251,7 +261,7 @@ At Porkbun, open **Domain Management → gbeardsell.com → DNS**. Add the recor
 
 These are GitHub's documented IPv4 records; optional IPv6 records are in the [GitHub DNS instructions](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain). Recheck that source when making the change.
 
-Change `site.url` to `https://gbeardsell.com`, keep `base` unset, rebuild, check, and redeploy. Once GitHub's DNS check and certificate provisioning finish, enable **Enforce HTTPS**. Allow up to 24 hours for DNS/certificate availability. Confirm HTTPS, `www` redirection, canonical URLs, RSS, and sitemap. [GitHub custom-domain guidance](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
+Keep `site.url` set to `https://gbeardsell.com` and `base` unset; rebuild, check, and redeploy after configuration changes. Once GitHub's DNS check and certificate provisioning finish, enable **Enforce HTTPS**. Allow up to 24 hours for DNS/certificate availability. Confirm HTTPS, `www` redirection, canonical URLs, RSS, and sitemap. [GitHub custom-domain guidance](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
 
 On Windows, inspect DNS with:
 

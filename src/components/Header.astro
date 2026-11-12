@@ -1,9 +1,9 @@
 ---
 import config from "@/config";
 const links = [
-  { href: "/", label: "Blog" },
-  { href: "https://fogcast.today", label: "fogcast.today" },
-  { href: "https://github.com/gbeardsell/fogcast", label: "Fogcast GitHub" },
+  { href: "/", label: "Home" },
+  { href: "/writing/", label: "Writing" },
+  { href: "/publications/", label: "Publications" },
   {
     href: "https://www.linkedin.com/in/guillaume-beardsell",
     label: "LinkedIn",
@@ -11,7 +11,7 @@ const links = [
 ];
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
-  href === "/" && (path === "/" || path.startsWith("/writing/"));
+  href === "/" ? path === "/" : href.startsWith("/") && path.startsWith(href);
 ---
 
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -19,7 +19,7 @@ const isActive = (href: string) =>
   <a class="site-name" href="/" aria-label="Guillaume Beardsell — home">
     <img
       class="site-icon"
-      src="/fogcast-icon.png"
+      src="/gb-monogram.svg"
       alt=""
       width="28"
       height="28"
